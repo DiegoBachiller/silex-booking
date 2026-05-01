@@ -13,6 +13,7 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as HolidaysRouteImport } from './routes/holidays'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as AiConfigRouteImport } from './routes/ai-config'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TeamRoute = TeamRouteImport.update({
@@ -35,6 +36,11 @@ const CalendarRoute = CalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiConfigRoute = AiConfigRouteImport.update({
+  id: '/ai-config',
+  path: '/ai-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
   '/services': typeof ServicesRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
   '/services': typeof ServicesRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
   '/services': typeof ServicesRoute
@@ -65,14 +74,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/calendar' | '/holidays' | '/services' | '/team'
+  fullPaths:
+    | '/'
+    | '/ai-config'
+    | '/calendar'
+    | '/holidays'
+    | '/services'
+    | '/team'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/calendar' | '/holidays' | '/services' | '/team'
-  id: '__root__' | '/' | '/calendar' | '/holidays' | '/services' | '/team'
+  to: '/' | '/ai-config' | '/calendar' | '/holidays' | '/services' | '/team'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-config'
+    | '/calendar'
+    | '/holidays'
+    | '/services'
+    | '/team'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiConfigRoute: typeof AiConfigRoute
   CalendarRoute: typeof CalendarRoute
   HolidaysRoute: typeof HolidaysRoute
   ServicesRoute: typeof ServicesRoute
@@ -109,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-config': {
+      id: '/ai-config'
+      path: '/ai-config'
+      fullPath: '/ai-config'
+      preLoaderRoute: typeof AiConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,6 +151,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiConfigRoute: AiConfigRoute,
   CalendarRoute: CalendarRoute,
   HolidaysRoute: HolidaysRoute,
   ServicesRoute: ServicesRoute,
