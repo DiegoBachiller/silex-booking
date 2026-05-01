@@ -1,4 +1,5 @@
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Calendar, Users, Wrench, CalendarOff, Bot, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +11,7 @@ const NAV = [
   { to: "/ai-config", label: "Agente IA", icon: Bot },
 ] as const;
 
-export function AppShell() {
+export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   return (
@@ -86,9 +87,7 @@ export function AppShell() {
           })}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <Outlet />
-        </div>
+        <div className="flex-1 min-w-0">{children}</div>
       </main>
     </div>
   );
