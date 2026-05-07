@@ -16,6 +16,8 @@ import { Route as HolidaysRouteImport } from './routes/holidays'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as AiConfigRouteImport } from './routes/ai-config'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EmbedBookRouteImport } from './routes/embed.book'
+import { Route as EmbedAvailabilityRouteImport } from './routes/embed.availability'
 import { Route as ApiPublicBookingConfigRouteImport } from './routes/api/public/booking/config'
 import { Route as ApiPublicBookingBookRouteImport } from './routes/api/public/booking/book'
 import { Route as ApiPublicBookingAvailabilityRouteImport } from './routes/api/public/booking/availability'
@@ -58,6 +60,16 @@ const AiConfigRoute = AiConfigRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedBookRoute = EmbedBookRouteImport.update({
+  id: '/embed/book',
+  path: '/embed/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedAvailabilityRoute = EmbedAvailabilityRouteImport.update({
+  id: '/embed/availability',
+  path: '/embed/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicBookingConfigRoute = ApiPublicBookingConfigRouteImport.update({
@@ -112,6 +124,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
+  '/embed/availability': typeof EmbedAvailabilityRoute
+  '/embed/book': typeof EmbedBookRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
   '/api/public/ai-tools/availability': typeof ApiPublicAiToolsAvailabilityRoute
   '/api/public/ai-tools/book': typeof ApiPublicAiToolsBookRoute
@@ -129,6 +143,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
+  '/embed/availability': typeof EmbedAvailabilityRoute
+  '/embed/book': typeof EmbedBookRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
   '/api/public/ai-tools/availability': typeof ApiPublicAiToolsAvailabilityRoute
   '/api/public/ai-tools/book': typeof ApiPublicAiToolsBookRoute
@@ -147,6 +163,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
+  '/embed/availability': typeof EmbedAvailabilityRoute
+  '/embed/book': typeof EmbedBookRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
   '/api/public/ai-tools/availability': typeof ApiPublicAiToolsAvailabilityRoute
   '/api/public/ai-tools/book': typeof ApiPublicAiToolsBookRoute
@@ -166,6 +184,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/services'
     | '/team'
+    | '/embed/availability'
+    | '/embed/book'
     | '/api/public/admin/api-keys'
     | '/api/public/ai-tools/availability'
     | '/api/public/ai-tools/book'
@@ -183,6 +203,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/services'
     | '/team'
+    | '/embed/availability'
+    | '/embed/book'
     | '/api/public/admin/api-keys'
     | '/api/public/ai-tools/availability'
     | '/api/public/ai-tools/book'
@@ -200,6 +222,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/services'
     | '/team'
+    | '/embed/availability'
+    | '/embed/book'
     | '/api/public/admin/api-keys'
     | '/api/public/ai-tools/availability'
     | '/api/public/ai-tools/book'
@@ -218,6 +242,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
   TeamRoute: typeof TeamRoute
+  EmbedAvailabilityRoute: typeof EmbedAvailabilityRoute
+  EmbedBookRoute: typeof EmbedBookRoute
   ApiPublicAdminApiKeysRoute: typeof ApiPublicAdminApiKeysRoute
   ApiPublicAiToolsAvailabilityRoute: typeof ApiPublicAiToolsAvailabilityRoute
   ApiPublicAiToolsBookRoute: typeof ApiPublicAiToolsBookRoute
@@ -277,6 +303,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed/book': {
+      id: '/embed/book'
+      path: '/embed/book'
+      fullPath: '/embed/book'
+      preLoaderRoute: typeof EmbedBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed/availability': {
+      id: '/embed/availability'
+      path: '/embed/availability'
+      fullPath: '/embed/availability'
+      preLoaderRoute: typeof EmbedAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/booking/config': {
@@ -346,6 +386,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
   TeamRoute: TeamRoute,
+  EmbedAvailabilityRoute: EmbedAvailabilityRoute,
+  EmbedBookRoute: EmbedBookRoute,
   ApiPublicAdminApiKeysRoute: ApiPublicAdminApiKeysRoute,
   ApiPublicAiToolsAvailabilityRoute: ApiPublicAiToolsAvailabilityRoute,
   ApiPublicAiToolsBookRoute: ApiPublicAiToolsBookRoute,
