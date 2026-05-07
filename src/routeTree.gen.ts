@@ -11,10 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as HolidaysRouteImport } from './routes/holidays'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as AiConfigRouteImport } from './routes/ai-config'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EmbedBookRouteImport } from './routes/embed.book'
+import { Route as EmbedAvailabilityRouteImport } from './routes/embed.availability'
+import { Route as ApiPublicBookingConfigRouteImport } from './routes/api/public/booking/config'
+import { Route as ApiPublicBookingBookRouteImport } from './routes/api/public/booking/book'
+import { Route as ApiPublicBookingAvailabilityRouteImport } from './routes/api/public/booking/availability'
 import { Route as ApiPublicAiToolsRescheduleRouteImport } from './routes/api/public/ai-tools/reschedule'
 import { Route as ApiPublicAiToolsCancelRouteImport } from './routes/api/public/ai-tools/cancel'
 import { Route as ApiPublicAiToolsBookRouteImport } from './routes/api/public/ai-tools/book'
@@ -29,6 +35,11 @@ const TeamRoute = TeamRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HolidaysRoute = HolidaysRouteImport.update({
@@ -51,6 +62,32 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmbedBookRoute = EmbedBookRouteImport.update({
+  id: '/embed/book',
+  path: '/embed/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedAvailabilityRoute = EmbedAvailabilityRouteImport.update({
+  id: '/embed/availability',
+  path: '/embed/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBookingConfigRoute = ApiPublicBookingConfigRouteImport.update({
+  id: '/api/public/booking/config',
+  path: '/api/public/booking/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBookingBookRoute = ApiPublicBookingBookRouteImport.update({
+  id: '/api/public/booking/book',
+  path: '/api/public/booking/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBookingAvailabilityRoute =
+  ApiPublicBookingAvailabilityRouteImport.update({
+    id: '/api/public/booking/availability',
+    path: '/api/public/booking/availability',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAiToolsRescheduleRoute =
   ApiPublicAiToolsRescheduleRouteImport.update({
     id: '/api/public/ai-tools/reschedule',
@@ -84,26 +121,38 @@ export interface FileRoutesByFullPath {
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
+  '/embed/availability': typeof EmbedAvailabilityRoute
+  '/embed/book': typeof EmbedBookRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
   '/api/public/ai-tools/availability': typeof ApiPublicAiToolsAvailabilityRoute
   '/api/public/ai-tools/book': typeof ApiPublicAiToolsBookRoute
   '/api/public/ai-tools/cancel': typeof ApiPublicAiToolsCancelRoute
   '/api/public/ai-tools/reschedule': typeof ApiPublicAiToolsRescheduleRoute
+  '/api/public/booking/availability': typeof ApiPublicBookingAvailabilityRoute
+  '/api/public/booking/book': typeof ApiPublicBookingBookRoute
+  '/api/public/booking/config': typeof ApiPublicBookingConfigRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
+  '/embed/availability': typeof EmbedAvailabilityRoute
+  '/embed/book': typeof EmbedBookRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
   '/api/public/ai-tools/availability': typeof ApiPublicAiToolsAvailabilityRoute
   '/api/public/ai-tools/book': typeof ApiPublicAiToolsBookRoute
   '/api/public/ai-tools/cancel': typeof ApiPublicAiToolsCancelRoute
   '/api/public/ai-tools/reschedule': typeof ApiPublicAiToolsRescheduleRoute
+  '/api/public/booking/availability': typeof ApiPublicBookingAvailabilityRoute
+  '/api/public/booking/book': typeof ApiPublicBookingBookRoute
+  '/api/public/booking/config': typeof ApiPublicBookingConfigRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,13 +160,19 @@ export interface FileRoutesById {
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
+  '/embed/availability': typeof EmbedAvailabilityRoute
+  '/embed/book': typeof EmbedBookRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
   '/api/public/ai-tools/availability': typeof ApiPublicAiToolsAvailabilityRoute
   '/api/public/ai-tools/book': typeof ApiPublicAiToolsBookRoute
   '/api/public/ai-tools/cancel': typeof ApiPublicAiToolsCancelRoute
   '/api/public/ai-tools/reschedule': typeof ApiPublicAiToolsRescheduleRoute
+  '/api/public/booking/availability': typeof ApiPublicBookingAvailabilityRoute
+  '/api/public/booking/book': typeof ApiPublicBookingBookRoute
+  '/api/public/booking/config': typeof ApiPublicBookingConfigRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,39 +181,57 @@ export interface FileRouteTypes {
     | '/ai-config'
     | '/calendar'
     | '/holidays'
+    | '/login'
     | '/services'
     | '/team'
+    | '/embed/availability'
+    | '/embed/book'
     | '/api/public/admin/api-keys'
     | '/api/public/ai-tools/availability'
     | '/api/public/ai-tools/book'
     | '/api/public/ai-tools/cancel'
     | '/api/public/ai-tools/reschedule'
+    | '/api/public/booking/availability'
+    | '/api/public/booking/book'
+    | '/api/public/booking/config'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/ai-config'
     | '/calendar'
     | '/holidays'
+    | '/login'
     | '/services'
     | '/team'
+    | '/embed/availability'
+    | '/embed/book'
     | '/api/public/admin/api-keys'
     | '/api/public/ai-tools/availability'
     | '/api/public/ai-tools/book'
     | '/api/public/ai-tools/cancel'
     | '/api/public/ai-tools/reschedule'
+    | '/api/public/booking/availability'
+    | '/api/public/booking/book'
+    | '/api/public/booking/config'
   id:
     | '__root__'
     | '/'
     | '/ai-config'
     | '/calendar'
     | '/holidays'
+    | '/login'
     | '/services'
     | '/team'
+    | '/embed/availability'
+    | '/embed/book'
     | '/api/public/admin/api-keys'
     | '/api/public/ai-tools/availability'
     | '/api/public/ai-tools/book'
     | '/api/public/ai-tools/cancel'
     | '/api/public/ai-tools/reschedule'
+    | '/api/public/booking/availability'
+    | '/api/public/booking/book'
+    | '/api/public/booking/config'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -166,13 +239,19 @@ export interface RootRouteChildren {
   AiConfigRoute: typeof AiConfigRoute
   CalendarRoute: typeof CalendarRoute
   HolidaysRoute: typeof HolidaysRoute
+  LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
   TeamRoute: typeof TeamRoute
+  EmbedAvailabilityRoute: typeof EmbedAvailabilityRoute
+  EmbedBookRoute: typeof EmbedBookRoute
   ApiPublicAdminApiKeysRoute: typeof ApiPublicAdminApiKeysRoute
   ApiPublicAiToolsAvailabilityRoute: typeof ApiPublicAiToolsAvailabilityRoute
   ApiPublicAiToolsBookRoute: typeof ApiPublicAiToolsBookRoute
   ApiPublicAiToolsCancelRoute: typeof ApiPublicAiToolsCancelRoute
   ApiPublicAiToolsRescheduleRoute: typeof ApiPublicAiToolsRescheduleRoute
+  ApiPublicBookingAvailabilityRoute: typeof ApiPublicBookingAvailabilityRoute
+  ApiPublicBookingBookRoute: typeof ApiPublicBookingBookRoute
+  ApiPublicBookingConfigRoute: typeof ApiPublicBookingConfigRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -189,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/holidays': {
@@ -217,6 +303,41 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed/book': {
+      id: '/embed/book'
+      path: '/embed/book'
+      fullPath: '/embed/book'
+      preLoaderRoute: typeof EmbedBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed/availability': {
+      id: '/embed/availability'
+      path: '/embed/availability'
+      fullPath: '/embed/availability'
+      preLoaderRoute: typeof EmbedAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/booking/config': {
+      id: '/api/public/booking/config'
+      path: '/api/public/booking/config'
+      fullPath: '/api/public/booking/config'
+      preLoaderRoute: typeof ApiPublicBookingConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/booking/book': {
+      id: '/api/public/booking/book'
+      path: '/api/public/booking/book'
+      fullPath: '/api/public/booking/book'
+      preLoaderRoute: typeof ApiPublicBookingBookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/booking/availability': {
+      id: '/api/public/booking/availability'
+      path: '/api/public/booking/availability'
+      fullPath: '/api/public/booking/availability'
+      preLoaderRoute: typeof ApiPublicBookingAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ai-tools/reschedule': {
@@ -262,13 +383,19 @@ const rootRouteChildren: RootRouteChildren = {
   AiConfigRoute: AiConfigRoute,
   CalendarRoute: CalendarRoute,
   HolidaysRoute: HolidaysRoute,
+  LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
   TeamRoute: TeamRoute,
+  EmbedAvailabilityRoute: EmbedAvailabilityRoute,
+  EmbedBookRoute: EmbedBookRoute,
   ApiPublicAdminApiKeysRoute: ApiPublicAdminApiKeysRoute,
   ApiPublicAiToolsAvailabilityRoute: ApiPublicAiToolsAvailabilityRoute,
   ApiPublicAiToolsBookRoute: ApiPublicAiToolsBookRoute,
   ApiPublicAiToolsCancelRoute: ApiPublicAiToolsCancelRoute,
   ApiPublicAiToolsRescheduleRoute: ApiPublicAiToolsRescheduleRoute,
+  ApiPublicBookingAvailabilityRoute: ApiPublicBookingAvailabilityRoute,
+  ApiPublicBookingBookRoute: ApiPublicBookingBookRoute,
+  ApiPublicBookingConfigRoute: ApiPublicBookingConfigRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
