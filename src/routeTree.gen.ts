@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as HolidaysRouteImport } from './routes/holidays'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as AiConfigRouteImport } from './routes/ai-config'
@@ -29,6 +30,11 @@ const TeamRoute = TeamRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HolidaysRoute = HolidaysRouteImport.update({
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
   '/holidays': typeof HolidaysRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/team': typeof TeamRoute
   '/api/public/admin/api-keys': typeof ApiPublicAdminApiKeysRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/ai-config'
     | '/calendar'
     | '/holidays'
+    | '/login'
     | '/services'
     | '/team'
     | '/api/public/admin/api-keys'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/ai-config'
     | '/calendar'
     | '/holidays'
+    | '/login'
     | '/services'
     | '/team'
     | '/api/public/admin/api-keys'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/ai-config'
     | '/calendar'
     | '/holidays'
+    | '/login'
     | '/services'
     | '/team'
     | '/api/public/admin/api-keys'
@@ -166,6 +178,7 @@ export interface RootRouteChildren {
   AiConfigRoute: typeof AiConfigRoute
   CalendarRoute: typeof CalendarRoute
   HolidaysRoute: typeof HolidaysRoute
+  LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
   TeamRoute: typeof TeamRoute
   ApiPublicAdminApiKeysRoute: typeof ApiPublicAdminApiKeysRoute
@@ -189,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/holidays': {
@@ -262,6 +282,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiConfigRoute: AiConfigRoute,
   CalendarRoute: CalendarRoute,
   HolidaysRoute: HolidaysRoute,
+  LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
   TeamRoute: TeamRoute,
   ApiPublicAdminApiKeysRoute: ApiPublicAdminApiKeysRoute,
