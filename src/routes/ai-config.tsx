@@ -306,3 +306,126 @@ function ApiKeysCard() {
     </div>
   );
 }
+
+function IntegrationsCard() {
+  const [tab, setTab] = useState<"vapi" | "elevenlabs" | "n8n" | "web">("web");
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://tu-app.lovable.app";
+
+  const aiTools = [
+    { name: "checkAvailability", path: "/api/public/ai-tools/availability", desc: "Consulta huecos libres", body: { date: "2026-05-10", service_id: "uuid-opcional", worker_id: "uuid-opcional" } },
+    { name: "bookAppointment", path: "/api/public/ai-tools/book", desc: "Crea una nueva cita", body: { worker_id: "uuid", service_id: "uuid-opcional", customer_name: "Juan Pérez", customer_phone: "+34600000000", starts_at: "2026-05-10T10:00:00Z" } },
+    { name: "rescheduleAppointment", path: "/api/public/ai-tools/reschedule", desc: "Mueve una cita existente", body: { appointment_id: "uuid", starts_at: "2026-05-10T11:00:00Z" } },
+    { name: "cancelAppointment", path: "/api/public/ai-tools/cancel", desc: "Cancela una cita", body: { appointment_id: "uuid", reason: "Cliente no puede" } },
+  ];
+
+  const vapiJson = JSON.stringify(aiTools.map((t) => ({
+    type: "function",
+    function: {
+      name: t.name,
+      description: t.desc,
+      parameters: { type: "object", properties: Object.fromEntries(Object.keys(t.body).map((k) => [k, { type: "string" }])), required: t.name === "bookAppointment" ? ["worker_id", "customer_name", "starts_at"] : t.name === "checkAvailability" ? ["date"] : ["appointment_id"] },
+      url: `${baseUrl}${t.path}`,
+      method: "POST",
+      headers: { "x-api-key": "TU_API_KEY_AQUI" },
+    },
+  })), null, 2);
+
+  const iframeSnippet = `<!-- Widget de reservas -->\n<iframe src="${baseUrl}/embed/book"\n  style="width:100%;height:780px;border:0;border-radius:12px"\n  loading="lazy"></iframe>\n\n<!-- Disponibilidad en tiempo real -->\n<iframe src="${baseUrl}/embed/availability"\n  style="width:100%;height:600px;border:0;border-radius:12px"\n  loading="lazy"></iframe>`;
+
+  const curlSnippet = aiTools.map((t) =>
+    `# ${t.desc}\ncurl -X POST ${baseUrl}${t.path} \\\n  -H "x-api-key: TU_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(t.body)}'`
+  ).join("\n\n");
+
+  const n8nGuide = `1. En n8n, crea un nuevo workflow.
+2. Trigger: WhatsApp Business / Telegram / Webhook (según el canal).
+3. Añade un nodo "AI Agent" (OpenAI o Gemini) con este system prompt:
+
+   "Eres el recepcionista de {NEGOCIO}. Ayudas a los clientes a reservar,
+    mover o cancelar citas. Usa SIEMPRE las herramientas disponibles antes
+    de prometer un horario. Confirma siempre nombre y teléfono."
+
+4. Añade 4 nodos "HTTP Request" como Tools del agente, uno por cada endpoint:
+   - checkAvailability  →  POST ${baseUrl}/api/public/ai-tools/availability
+   - bookAppointment    →  POST ${baseUrl}/api/public/ai-tools/book
+   - rescheduleAppointment → POST ${baseUrl}/api/public/ai-tools/reschedule
+   - cancelAppointment  →  POST ${baseUrl}/api/public/ai-tools/cancel
+
+5. En cada HTTP Request: Header "x-api-key" = TU_API_KEY (creada arriba).
+6. Conecta el output del agente al nodo de respuesta del canal.
+
+El agente decide qué herramienta usar según la conversación.`;
+
+  const tabs = [
+    { id: "web" as const, label: "Web (iframe)" },
+    { id: "vapi" as const, label: "Vapi (voz)" },
+    { id: "elevenlabs" as const, label: "ElevenLabs" },
+    { id: "n8n" as const, label: "n8n / WhatsApp" },
+  ];
+
+  return (
+    <div className="silex-card p-6">
+      <div className="flex items-center gap-2 mb-1">
+        <Webhook className="h-4 w-4 text-primary" />
+        <h2 className="font-semibold">Integraciones</h2>
+      </div>
+      <p className="text-xs text-muted-foreground mb-4">
+        Copia y pega para conectar tu web, tu agente de voz o tu workflow de n8n.
+      </p>
+
+      <div className="flex flex-wrap gap-1 mb-4 border-b border-border">
+        {tabs.map((t) => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            className={`px-3 py-2 text-xs font-medium border-b-2 -mb-px transition ${tab === t.id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "web" && (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">Pega este HTML en cualquier web (WordPress, Wix, Webflow, custom). Las reservas aparecerán al instante en tu calendario.</p>
+          <CodeBlock code={iframeSnippet} />
+          <div className="grid grid-cols-2 gap-2 text-xs pt-2">
+            <a href="/embed/book" target="_blank" rel="noreferrer" className="rounded-md border border-border px-3 py-2 hover:bg-accent text-center">Abrir widget de reservas →</a>
+            <a href="/embed/availability" target="_blank" rel="noreferrer" className="rounded-md border border-border px-3 py-2 hover:bg-accent text-center">Abrir vista en tiempo real →</a>
+          </div>
+        </div>
+      )}
+
+      {tab === "vapi" && (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">En el dashboard de <strong>Vapi</strong>, crea un assistant y pega estas 4 funciones en la sección "Tools / Functions". Sustituye <code className="bg-accent px-1 rounded">TU_API_KEY_AQUI</code> por una clave creada arriba.</p>
+          <CodeBlock code={vapiJson} />
+        </div>
+      )}
+
+      {tab === "elevenlabs" && (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">En <strong>ElevenLabs Conversational AI</strong>, sección "Tools" del agente, añade 4 herramientas tipo "Webhook" con estos endpoints. Misma estructura que Vapi:</p>
+          <CodeBlock code={vapiJson} />
+        </div>
+      )}
+
+      {tab === "n8n" && (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">Conecta WhatsApp, Telegram o cualquier canal con un agente de n8n que use tus endpoints como tools:</p>
+          <CodeBlock code={n8nGuide} />
+          <p className="text-xs text-muted-foreground pt-2">Ejemplos curl de cada endpoint:</p>
+          <CodeBlock code={curlSnippet} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CodeBlock({ code }: { code: string }) {
+  return (
+    <div className="relative">
+      <pre className="text-[11px] bg-accent/40 rounded-lg p-3 overflow-auto max-h-80 font-mono whitespace-pre">{code}</pre>
+      <Button size="icon" variant="ghost" className="h-7 w-7 absolute top-2 right-2"
+        onClick={() => { navigator.clipboard.writeText(code); toast.success("Copiado"); }}>
+        <Copy className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+}
