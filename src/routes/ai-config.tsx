@@ -140,6 +140,10 @@ function AiConfigPage() {
           <ToolsCard />
           <ApiKeysCard />
         </div>
+
+        <div className="lg:col-span-3">
+          <IntegrationsCard />
+        </div>
       </div>
     </AppShell>
   );
