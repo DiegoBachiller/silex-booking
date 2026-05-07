@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Plus, Bot, User, Calendar as CalIcon } from "lucide-react";
-import { useAppointments, useServices, useWorkers, useMut, type Appointment, type Worker } from "@/hooks/useSilexData";
+import { useAppointments, useServices, useWorkers, useMut, useAppointmentsRealtime, type Appointment, type Worker } from "@/hooks/useSilexData";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,7 @@ function fmtTime(d: Date) {
 type DraftRange = { worker_id?: string; date: Date; start: Date; end: Date } | null;
 
 function CalendarPage() {
+  useAppointmentsRealtime();
   const [view, setView] = useState<ViewMode>("week");
   const [cursor, setCursor] = useState(() => startOfDay(new Date()));
   const [open, setOpen] = useState(false);
