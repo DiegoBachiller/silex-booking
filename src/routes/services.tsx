@@ -38,7 +38,7 @@ function ServicesPage() {
           </Button>
         }
       />
-      <div className="px-6 md:px-10 py-6">
+      <div className="px-4 sm:px-6 md:px-10 py-5 md:py-6">
         {services.length === 0 ? (
           <div className="silex-card p-12 text-center">
             <div className="mx-auto h-12 w-12 rounded-xl bg-accent flex items-center justify-center mb-4">
@@ -140,7 +140,7 @@ function ServiceDialog({ open, onOpenChange, service }: { open: boolean; onOpenC
             <Label className="text-xs text-muted-foreground">Descripción</Label>
             <Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">Duración (min)</Label>
               <Input type="number" min={5} step={5} value={form.duration_minutes}

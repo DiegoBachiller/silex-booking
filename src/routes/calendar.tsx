@@ -144,7 +144,7 @@ function CalendarPage() {
         }
       />
 
-      <div className="px-6 md:px-10 py-6">
+      <div className="px-4 sm:px-6 md:px-10 py-5 md:py-6">
         {activeWorkers.length === 0 ? (
           <EmptyState />
         ) : view === "day" ? (
@@ -396,26 +396,50 @@ function DayGrid({
   onDraft: (d: { date: Date; start: Date; end: Date; worker_id?: string }) => void;
 }) {
   return (
-    <div className="silex-card overflow-hidden">
-      <div className="overflow-x-auto">
-        <div className="grid min-w-[700px]" style={{ gridTemplateColumns: `64px repeat(${workers.length}, minmax(180px, 1fr))` }}>
-          <HoursColumn />
-          {workers.map((w) => (
-            <WorkerColumn
-              key={w.id}
-              date={day}
-              worker={w}
-              services={services}
-              appointments={appointments.filter((a) => a.worker_id === w.id)}
-              workers={workers}
-              onPick={onPick}
-              onDraft={onDraft}
-              showHeader
-            />
-          ))}
+    <>
+      {/* Mobile — workers stacked vertically, each with own time grid */}
+      <div className="md:hidden space-y-4">
+        {workers.map((w) => (
+          <div key={w.id} className="silex-card overflow-hidden">
+            <div className="grid" style={{ gridTemplateColumns: `56px minmax(0, 1fr)` }}>
+              <HoursColumn />
+              <WorkerColumn
+                date={day}
+                worker={w}
+                services={services}
+                appointments={appointments.filter((a) => a.worker_id === w.id)}
+                workers={workers}
+                onPick={onPick}
+                onDraft={onDraft}
+                showHeader
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop / tablet — workers as columns */}
+      <div className="silex-card overflow-hidden hidden md:block">
+        <div className="overflow-x-auto">
+          <div className="grid min-w-[700px]" style={{ gridTemplateColumns: `64px repeat(${workers.length}, minmax(180px, 1fr))` }}>
+            <HoursColumn />
+            {workers.map((w) => (
+              <WorkerColumn
+                key={w.id}
+                date={day}
+                worker={w}
+                services={services}
+                appointments={appointments.filter((a) => a.worker_id === w.id)}
+                workers={workers}
+                onPick={onPick}
+                onDraft={onDraft}
+                showHeader
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -730,7 +754,7 @@ function AppointmentDialog({
             {appointment ? "Editar cita" : "Nueva cita"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Cliente" full>
             <Input value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
           </Field>
