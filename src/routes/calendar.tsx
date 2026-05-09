@@ -144,7 +144,7 @@ function CalendarPage() {
         }
       />
 
-      <div className="px-6 md:px-10 py-6">
+      <div className="px-4 sm:px-6 md:px-10 py-5 md:py-6">
         {activeWorkers.length === 0 ? (
           <EmptyState />
         ) : view === "day" ? (
@@ -730,7 +730,7 @@ function AppointmentDialog({
             {appointment ? "Editar cita" : "Nueva cita"}
           </DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Cliente" full>
             <Input value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />
           </Field>

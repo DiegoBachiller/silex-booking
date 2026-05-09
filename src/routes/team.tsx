@@ -46,7 +46,7 @@ function TeamPage() {
         }
       />
 
-      <div className="px-6 md:px-10 py-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="px-4 sm:px-6 md:px-10 py-5 md:py-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {workers.length === 0 && (
           <div className="silex-card p-8 col-span-full text-center text-sm text-muted-foreground">
             Aún no hay trabajadores. Añade el primero para empezar.
@@ -172,7 +172,7 @@ function WorkerDialog({ open, onOpenChange, worker }: { open: boolean; onOpenCha
           <DialogTitle>{worker ? "Editar trabajador" : "Nuevo trabajador"}</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="col-span-2 space-y-1.5">
             <Label className="text-xs text-muted-foreground">Nombre</Label>
             <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />

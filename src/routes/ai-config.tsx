@@ -82,7 +82,7 @@ function AiConfigPage() {
         title="Agente IA"
         description="Configura cómo se presenta tu asistente. El prompt técnico está protegido — tú solo defines la personalidad."
       />
-      <div className="px-6 md:px-10 py-6 grid gap-6 lg:grid-cols-3">
+      <div className="px-4 sm:px-6 md:px-10 py-5 md:py-6 grid gap-6 lg:grid-cols-3">
         {/* Profile */}
         <div className="silex-card p-6 lg:col-span-2 space-y-5">
           <div className="flex items-center gap-3">
@@ -95,7 +95,7 @@ function AiConfigPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field label="Nombre del negocio">
               <Input value={form.business_name} onChange={(e) => setForm({ ...form, business_name: e.target.value })} />
             </Field>
