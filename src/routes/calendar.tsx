@@ -51,7 +51,7 @@ function fmtTime(d: Date) {
   return d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
 }
 
-type DraftRange = { worker_id?: string; date: Date; start: Date; end: Date } | null;
+type DraftRange = AppointmentDraft;
 
 function CalendarPage() {
   useAppointmentsRealtime();
