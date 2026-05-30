@@ -13,6 +13,8 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HolidaysRouteImport } from './routes/holidays'
+import { Route as EstadisticasRouteImport } from './routes/estadisticas'
+import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as AiConfigRouteImport } from './routes/ai-config'
 import { Route as IndexRouteImport } from './routes/index'
@@ -45,6 +47,16 @@ const LoginRoute = LoginRouteImport.update({
 const HolidaysRoute = HolidaysRouteImport.update({
   id: '/holidays',
   path: '/holidays',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstadisticasRoute = EstadisticasRouteImport.update({
+  id: '/estadisticas',
+  path: '/estadisticas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientesRoute = ClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarRoute = CalendarRouteImport.update({
@@ -120,6 +132,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
+  '/clientes': typeof ClientesRoute
+  '/estadisticas': typeof EstadisticasRoute
   '/holidays': typeof HolidaysRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
@@ -139,6 +153,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
+  '/clientes': typeof ClientesRoute
+  '/estadisticas': typeof EstadisticasRoute
   '/holidays': typeof HolidaysRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
@@ -159,6 +175,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-config': typeof AiConfigRoute
   '/calendar': typeof CalendarRoute
+  '/clientes': typeof ClientesRoute
+  '/estadisticas': typeof EstadisticasRoute
   '/holidays': typeof HolidaysRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
@@ -180,6 +198,8 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-config'
     | '/calendar'
+    | '/clientes'
+    | '/estadisticas'
     | '/holidays'
     | '/login'
     | '/services'
@@ -199,6 +219,8 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-config'
     | '/calendar'
+    | '/clientes'
+    | '/estadisticas'
     | '/holidays'
     | '/login'
     | '/services'
@@ -218,6 +240,8 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-config'
     | '/calendar'
+    | '/clientes'
+    | '/estadisticas'
     | '/holidays'
     | '/login'
     | '/services'
@@ -238,6 +262,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiConfigRoute: typeof AiConfigRoute
   CalendarRoute: typeof CalendarRoute
+  ClientesRoute: typeof ClientesRoute
+  EstadisticasRoute: typeof EstadisticasRoute
   HolidaysRoute: typeof HolidaysRoute
   LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
@@ -282,6 +308,20 @@ declare module '@tanstack/react-router' {
       path: '/holidays'
       fullPath: '/holidays'
       preLoaderRoute: typeof HolidaysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estadisticas': {
+      id: '/estadisticas'
+      path: '/estadisticas'
+      fullPath: '/estadisticas'
+      preLoaderRoute: typeof EstadisticasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clientes': {
+      id: '/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof ClientesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendar': {
@@ -382,6 +422,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiConfigRoute: AiConfigRoute,
   CalendarRoute: CalendarRoute,
+  ClientesRoute: ClientesRoute,
+  EstadisticasRoute: EstadisticasRoute,
   HolidaysRoute: HolidaysRoute,
   LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
@@ -400,12 +442,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
