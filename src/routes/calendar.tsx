@@ -3,16 +3,9 @@ import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Plus, Bot, User, Calendar as CalIcon } from "lucide-react";
-import { useAppointments, useServices, useWorkers, useMut, useAppointmentsRealtime, type Appointment, type Worker } from "@/hooks/useSilexData";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { ChevronLeft, ChevronRight, Plus, Bot, User } from "lucide-react";
+import { useAppointments, useServices, useWorkers, useAppointmentsRealtime, type Appointment, type Worker } from "@/hooks/useSilexData";
+import { AppointmentDialog, type AppointmentDraft } from "@/components/AppointmentDialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/calendar")({
