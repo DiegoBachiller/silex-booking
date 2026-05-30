@@ -37,7 +37,7 @@ function useCustomers() {
   return useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("customers" as never).select("*").order("name");
+      const { data, error } = await (supabase as any).from("customers").select("*").order("name");
       if (error) throw error;
       return (data as unknown as Customer[]) ?? [];
     },
@@ -165,10 +165,10 @@ function CustomerDialog({ open, onOpenChange, customer }: { open: boolean; onOpe
         notes: form.notes || null,
       };
       if (customer) {
-        const { error } = await supabase.from("customers" as never).update(payload).eq("id", customer.id);
+        const { error } = await (supabase as any).from("customers").update(payload).eq("id", customer.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("customers" as never).insert(payload);
+        const { error } = await (supabase as any).from("customers").insert(payload);
         if (error) throw error;
       }
     },
@@ -179,7 +179,7 @@ function CustomerDialog({ open, onOpenChange, customer }: { open: boolean; onOpe
   const remove = useMut({
     fn: async () => {
       if (!customer) return;
-      const { error } = await supabase.from("customers" as never).delete().eq("id", customer.id);
+      const { error } = await (supabase as any).from("customers").delete().eq("id", customer.id);
       if (error) throw error;
     },
     success: "Cliente eliminado",
