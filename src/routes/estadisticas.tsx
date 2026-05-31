@@ -26,6 +26,23 @@ function EstadisticasPage() {
   const { data: workers = [] } = useWorkers();
   const { data: services = [] } = useServices();
 
+  // Lightweight set of existing customers (just identifying fields) to mark
+  // appointments whose client has been removed.
+  const { data: customerKeys = new Set<string>() } = useQuery({
+    queryKey: ["customer_keys"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from("customers").select("name, phone, email");
+      if (error) throw error;
+      const set = new Set<string>();
+      (data ?? []).forEach((c: { name: string; phone: string | null; email: string | null }) => {
+        if (c.phone) set.add(`p:${c.phone}`);
+        if (c.email) set.add(`e:${c.email.toLowerCase()}`);
+        if (c.name) set.add(`n:${c.name.toLowerCase()}`);
+      });
+      return set;
+    },
+  });
+
   const stats = useMemo(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
