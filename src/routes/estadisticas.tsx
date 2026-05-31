@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { CalendarCheck, Euro, Trophy, XCircle, BarChart2 } from "lucide-react";
 import { useAppointments, useWorkers, useServices, useAppointmentsRealtime } from "@/hooks/useSilexData";
 import { formatCurrency } from "@/lib/format";
+import { getStatus, statusBadgeStyle } from "@/lib/appointment-status";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/estadisticas")({
   head: () => ({
@@ -17,18 +20,28 @@ export const Route = createFileRoute("/estadisticas")({
   component: EstadisticasPage,
 });
 
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  scheduled: { label: "Programada", color: "#6366f1" },
-  completed: { label: "Completada", color: "#10b981" },
-  cancelled: { label: "Cancelada", color: "#ef4444" },
-  no_show: { label: "No asistió", color: "#f59e0b" },
-};
-
 function EstadisticasPage() {
   useAppointmentsRealtime();
   const { data: appointments = [] } = useAppointments();
   const { data: workers = [] } = useWorkers();
   const { data: services = [] } = useServices();
+
+  // Lightweight set of existing customers (just identifying fields) to mark
+  // appointments whose client has been removed.
+  const { data: customerKeys = new Set<string>() } = useQuery({
+    queryKey: ["customer_keys"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from("customers").select("name, phone, email");
+      if (error) throw error;
+      const set = new Set<string>();
+      (data ?? []).forEach((c: { name: string; phone: string | null; email: string | null }) => {
+        if (c.phone) set.add(`p:${c.phone}`);
+        if (c.email) set.add(`e:${c.email.toLowerCase()}`);
+        if (c.name) set.add(`n:${c.name.toLowerCase()}`);
+      });
+      return set;
+    },
+  });
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -136,15 +149,29 @@ function EstadisticasPage() {
                 {stats.recent.map((a) => {
                   const w = workers.find((x) => x.id === a.worker_id);
                   const s = services.find((x) => x.id === a.service_id);
-                  const st = STATUS_LABEL[a.status] ?? STATUS_LABEL.scheduled;
+                  const st = getStatus(a.status);
                   const d = new Date(a.starts_at);
+                  const isDeleted =
+                    customerKeys.size > 0 &&
+                    !(
+                      (a.customer_phone && customerKeys.has(`p:${a.customer_phone}`)) ||
+                      (a.customer_email && customerKeys.has(`e:${a.customer_email.toLowerCase()}`)) ||
+                      customerKeys.has(`n:${a.customer_name.toLowerCase()}`)
+                    );
                   return (
                     <tr key={a.id} className="border-t border-border">
                       <td className="px-4 py-2.5 whitespace-nowrap">
                         {d.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })}
                         <span className="text-muted-foreground"> · {d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span>
                       </td>
-                      <td className="px-4 py-2.5 font-medium">{a.customer_name}</td>
+                      <td className="px-4 py-2.5">
+                        <span className="font-medium">{a.customer_name}</span>
+                        {isDeleted && (
+                          <Badge variant="outline" className="ml-2 text-[10px] font-normal text-muted-foreground">
+                            Cliente eliminado
+                          </Badge>
+                        )}
+                      </td>
                       <td className="px-4 py-2.5 text-muted-foreground hidden sm:table-cell">{s?.name ?? "—"}</td>
                       <td className="px-4 py-2.5 hidden md:table-cell">
                         <span className="inline-flex items-center gap-1.5">
@@ -153,13 +180,7 @@ function EstadisticasPage() {
                         </span>
                       </td>
                       <td className="px-4 py-2.5">
-                        <Badge
-                          variant="secondary"
-                          style={{
-                            background: `color-mix(in oklab, ${st.color} 14%, transparent)`,
-                            color: st.color,
-                          }}
-                        >
+                        <Badge variant="secondary" style={statusBadgeStyle(a.status)}>
                           {st.label}
                         </Badge>
                       </td>
