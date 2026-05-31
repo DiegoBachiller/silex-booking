@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Plus, Pencil, Search, Users, Mail, Phone, Calendar as CalIcon } from "lucide-react";
-import { useAppointments, useWorkers, useServices, useMut } from "@/hooks/useSilexData";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Plus, Pencil, Search, Users, Mail, Phone, Calendar as CalIcon, Trash2 } from "lucide-react";
+import { useWorkers, useServices, useMut } from "@/hooks/useSilexData";
 import { supabase } from "@/integrations/supabase/client";
+import { getStatus, statusBadgeStyle } from "@/lib/appointment-status";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/clientes")({
   head: () => ({
@@ -33,19 +45,36 @@ type Customer = {
   created_at: string;
 };
 
-function useCustomers() {
-  return useQuery({
-    queryKey: ["customers"],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any).from("customers").select("*").order("name");
+const PAGE_SIZE = 25;
+const HISTORY_PAGE_SIZE = 10;
+
+function useCustomersPaged() {
+  return useInfiniteQuery({
+    queryKey: ["customers", "paged"],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const from = (pageParam as number) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, error, count } = await (supabase as any)
+        .from("customers")
+        .select("*", { count: "exact" })
+        .order("name")
+        .range(from, to);
       if (error) throw error;
-      return (data as unknown as Customer[]) ?? [];
+      return { rows: (data as Customer[]) ?? [], count: count ?? 0, page: pageParam as number };
+    },
+    getNextPageParam: (last) => {
+      const loaded = (last.page + 1) * PAGE_SIZE;
+      return loaded < last.count ? last.page + 1 : undefined;
     },
   });
 }
 
 function ClientesPage() {
-  const { data: customers = [] } = useCustomers();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useCustomersPaged();
+  const customers = useMemo(() => data?.pages.flatMap((p) => p.rows) ?? [], [data]);
+  const total = data?.pages[0]?.count ?? 0;
+
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Customer | null>(null);
@@ -71,17 +100,24 @@ function ClientesPage() {
         }
       />
       <div className="px-4 sm:px-6 md:px-10 py-5 md:py-6 space-y-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nombre o teléfono…"
-            className="pl-9"
-          />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="relative max-w-md w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nombre o teléfono…"
+              className="pl-9"
+            />
+          </div>
+          {total > 0 && (
+            <div className="text-xs text-muted-foreground">
+              Mostrando {customers.length} de {total}
+            </div>
+          )}
         </div>
 
-        {customers.length === 0 ? (
+        {total === 0 ? (
           <div className="silex-card p-12 text-center">
             <div className="mx-auto h-12 w-12 rounded-xl bg-accent flex items-center justify-center mb-4">
               <Users className="h-6 w-6 text-accent-foreground" />
@@ -91,61 +127,82 @@ function ClientesPage() {
             <Button onClick={() => { setEditing(null); setOpen(true); }}>Crear cliente</Button>
           </div>
         ) : (
-          <div className="silex-card overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-surface-muted text-xs text-muted-foreground">
-                <tr>
-                  <th className="text-left font-medium px-4 py-3">Nombre</th>
-                  <th className="text-left font-medium px-4 py-3 hidden sm:table-cell">Teléfono</th>
-                  <th className="text-left font-medium px-4 py-3 hidden md:table-cell">Email</th>
-                  <th className="text-right font-medium px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((c) => (
-                  <tr
-                    key={c.id}
-                    onClick={() => setSelected(c)}
-                    className="border-t border-border hover:bg-surface-muted/50 transition-colors cursor-pointer"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="font-medium">{c.name}</div>
-                      <div className="sm:hidden text-xs text-muted-foreground">{c.phone ?? "—"}</div>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{c.phone ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{c.email ?? "—"}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => { e.stopPropagation(); setEditing(c); setOpen(true); }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
+          <>
+            <div className="silex-card overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-surface-muted text-xs text-muted-foreground">
                   <tr>
-                    <td colSpan={4} className="px-4 py-10 text-center text-sm text-muted-foreground">
-                      Sin resultados para “{search}”.
-                    </td>
+                    <th className="text-left font-medium px-4 py-3">Nombre</th>
+                    <th className="text-left font-medium px-4 py-3 hidden sm:table-cell">Teléfono</th>
+                    <th className="text-left font-medium px-4 py-3 hidden md:table-cell">Email</th>
+                    <th className="text-right font-medium px-4 py-3"></th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filtered.map((c) => (
+                    <tr
+                      key={c.id}
+                      onClick={() => setSelected(c)}
+                      className="border-t border-border hover:bg-surface-muted/50 transition-colors cursor-pointer"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="font-medium">{c.name}</div>
+                        <div className="sm:hidden text-xs text-muted-foreground">{c.phone ?? "—"}</div>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{c.phone ?? "—"}</td>
+                      <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{c.email ?? "—"}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => { e.stopPropagation(); setEditing(c); setOpen(true); }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                        Sin resultados para “{search}”.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {hasNextPage && (
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? "Cargando…" : "Cargar más"}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
       <CustomerDialog open={open} onOpenChange={setOpen} customer={editing} />
-      <CustomerSheet customer={selected} onClose={() => setSelected(null)} onEdit={(c) => { setSelected(null); setEditing(c); setOpen(true); }} />
+      <CustomerSheet
+        customer={selected}
+        onClose={() => setSelected(null)}
+        onEdit={(c) => { setSelected(null); setEditing(c); setOpen(true); }}
+      />
     </AppShell>
   );
 }
 
 function CustomerDialog({ open, onOpenChange, customer }: { open: boolean; onOpenChange: (v: boolean) => void; customer: Customer | null }) {
+  const qc = useQueryClient();
   const [form, setForm] = useState({ name: "", phone: "", email: "", notes: "" });
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   useEffect(() => {
     if (!open) return;
     setForm({
@@ -173,18 +230,22 @@ function CustomerDialog({ open, onOpenChange, customer }: { open: boolean; onOpe
       }
     },
     success: customer ? "Cliente actualizado" : "Cliente creado",
-    invalidate: ["customers"],
+    invalidate: ["customers", "customer_keys"],
   });
 
-  const remove = useMut({
-    fn: async () => {
-      if (!customer) return;
-      const { error } = await (supabase as any).from("customers").delete().eq("id", customer.id);
-      if (error) throw error;
-    },
-    success: "Cliente eliminado",
-    invalidate: ["customers"],
-  });
+  const doDelete = async () => {
+    if (!customer) return;
+    const { error } = await (supabase as any).from("customers").delete().eq("id", customer.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Cliente eliminado");
+    qc.invalidateQueries({ queryKey: ["customers"] });
+    qc.invalidateQueries({ queryKey: ["customer_keys"] });
+    setConfirmDelete(false);
+    onOpenChange(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -214,8 +275,8 @@ function CustomerDialog({ open, onOpenChange, customer }: { open: boolean; onOpe
         </div>
         <DialogFooter className="gap-2">
           {customer && (
-            <Button variant="destructive" onClick={() => { remove.mutate(); onOpenChange(false); }}>
-              Eliminar
+            <Button variant="destructive" onClick={() => setConfirmDelete(true)} className="gap-2">
+              <Trash2 className="h-4 w-4" /> Eliminar
             </Button>
           )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
@@ -229,32 +290,75 @@ function CustomerDialog({ open, onOpenChange, customer }: { open: boolean; onOpe
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar a {customer?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Las citas pasadas se conservarán y aparecerán
+              marcadas como “Cliente eliminado”.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={doDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
 
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  scheduled: { label: "Programada", color: "#6366f1" },
-  completed: { label: "Completada", color: "#10b981" },
-  cancelled: { label: "Cancelada", color: "#ef4444" },
-  no_show: { label: "No asistió", color: "#f59e0b" },
+type CustomerAppt = {
+  id: string;
+  worker_id: string;
+  service_id: string | null;
+  starts_at: string;
+  status: string;
 };
 
+function useCustomerHistory(customer: Customer | null) {
+  return useInfiniteQuery({
+    queryKey: ["customer_history", customer?.id ?? "none"],
+    enabled: !!customer,
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const c = customer!;
+      const from = (pageParam as number) * HISTORY_PAGE_SIZE;
+      const to = from + HISTORY_PAGE_SIZE - 1;
+      // Match by phone OR email OR name (covers manual entries that didn't link to a customer row).
+      const ors: string[] = [];
+      if (c.phone) ors.push(`customer_phone.eq.${c.phone}`);
+      if (c.email) ors.push(`customer_email.eq.${c.email}`);
+      ors.push(`customer_name.ilike.${c.name}`);
+      const { data, error, count } = await (supabase as any)
+        .from("appointments")
+        .select("id, worker_id, service_id, starts_at, status", { count: "exact" })
+        .or(ors.join(","))
+        .order("starts_at", { ascending: false })
+        .range(from, to);
+      if (error) throw error;
+      return { rows: (data as CustomerAppt[]) ?? [], count: count ?? 0, page: pageParam as number };
+    },
+    getNextPageParam: (last) => {
+      const loaded = (last.page + 1) * HISTORY_PAGE_SIZE;
+      return loaded < last.count ? last.page + 1 : undefined;
+    },
+  });
+}
+
 function CustomerSheet({ customer, onClose, onEdit }: { customer: Customer | null; onClose: () => void; onEdit: (c: Customer) => void }) {
-  const { data: appointments = [] } = useAppointments();
   const { data: workers = [] } = useWorkers();
   const { data: services = [] } = useServices();
-
-  const history = useMemo(() => {
-    if (!customer) return [];
-    return appointments
-      .filter((a) =>
-        (customer.phone && a.customer_phone === customer.phone) ||
-        (customer.email && a.customer_email === customer.email) ||
-        a.customer_name.toLowerCase() === customer.name.toLowerCase(),
-      )
-      .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
-  }, [appointments, customer]);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useCustomerHistory(customer);
+  const history = useMemo(() => data?.pages.flatMap((p) => p.rows) ?? [], [data]);
+  const total = data?.pages[0]?.count ?? 0;
 
   return (
     <Sheet open={!!customer} onOpenChange={(v) => !v && onClose()}>
@@ -280,10 +384,19 @@ function CustomerSheet({ customer, onClose, onEdit }: { customer: Customer | nul
             </div>
 
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-2">
-                <CalIcon className="h-3.5 w-3.5" /> Historial de citas
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <CalIcon className="h-3.5 w-3.5" /> Historial de citas
+                </span>
+                {total > 0 && (
+                  <span className="font-normal normal-case tracking-normal">
+                    {history.length} de {total}
+                  </span>
+                )}
               </div>
-              {history.length === 0 ? (
+              {isLoading ? (
+                <div className="text-sm text-muted-foreground silex-card p-4 text-center">Cargando…</div>
+              ) : history.length === 0 ? (
                 <div className="text-sm text-muted-foreground silex-card p-4 text-center">
                   Sin citas registradas.
                 </div>
@@ -292,7 +405,7 @@ function CustomerSheet({ customer, onClose, onEdit }: { customer: Customer | nul
                   {history.map((a) => {
                     const w = workers.find((x) => x.id === a.worker_id);
                     const s = services.find((x) => x.id === a.service_id);
-                    const st = STATUS_LABEL[a.status] ?? STATUS_LABEL.scheduled;
+                    const st = getStatus(a.status);
                     const d = new Date(a.starts_at);
                     return (
                       <div
@@ -305,13 +418,7 @@ function CustomerSheet({ customer, onClose, onEdit }: { customer: Customer | nul
                             {d.toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" })}
                             <span className="text-muted-foreground"> · {d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span>
                           </div>
-                          <Badge
-                            variant="secondary"
-                            style={{
-                              background: `color-mix(in oklab, ${st.color} 14%, transparent)`,
-                              color: st.color,
-                            }}
-                          >
+                          <Badge variant="secondary" style={statusBadgeStyle(a.status)}>
                             {st.label}
                           </Badge>
                         </div>
@@ -321,6 +428,17 @@ function CustomerSheet({ customer, onClose, onEdit }: { customer: Customer | nul
                       </div>
                     );
                   })}
+                  {hasNextPage && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      {isFetchingNextPage ? "Cargando…" : "Cargar más"}
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
