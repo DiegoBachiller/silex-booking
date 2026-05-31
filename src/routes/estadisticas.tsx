@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +8,7 @@ import { CalendarCheck, Euro, Trophy, XCircle, BarChart2 } from "lucide-react";
 import { useAppointments, useWorkers, useServices, useAppointmentsRealtime } from "@/hooks/useSilexData";
 import { formatCurrency } from "@/lib/format";
 import { getStatus, statusBadgeStyle } from "@/lib/appointment-status";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/estadisticas")({
   head: () => ({
