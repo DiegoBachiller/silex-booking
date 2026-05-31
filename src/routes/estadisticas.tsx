@@ -130,7 +130,7 @@ function EstadisticasPage() {
                 {stats.recent.map((a) => {
                   const w = workers.find((x) => x.id === a.worker_id);
                   const s = services.find((x) => x.id === a.service_id);
-                  const st = STATUS_LABEL[a.status] ?? STATUS_LABEL.scheduled;
+                  const st = getStatus(a.status);
                   const d = new Date(a.starts_at);
                   return (
                     <tr key={a.id} className="border-t border-border">
@@ -147,13 +147,7 @@ function EstadisticasPage() {
                         </span>
                       </td>
                       <td className="px-4 py-2.5">
-                        <Badge
-                          variant="secondary"
-                          style={{
-                            background: `color-mix(in oklab, ${st.color} 14%, transparent)`,
-                            color: st.color,
-                          }}
-                        >
+                        <Badge variant="secondary" style={statusBadgeStyle(a.status)}>
                           {st.label}
                         </Badge>
                       </td>
