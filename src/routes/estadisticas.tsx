@@ -151,13 +151,27 @@ function EstadisticasPage() {
                   const s = services.find((x) => x.id === a.service_id);
                   const st = getStatus(a.status);
                   const d = new Date(a.starts_at);
+                  const isDeleted =
+                    customerKeys.size > 0 &&
+                    !(
+                      (a.customer_phone && customerKeys.has(`p:${a.customer_phone}`)) ||
+                      (a.customer_email && customerKeys.has(`e:${a.customer_email.toLowerCase()}`)) ||
+                      customerKeys.has(`n:${a.customer_name.toLowerCase()}`)
+                    );
                   return (
                     <tr key={a.id} className="border-t border-border">
                       <td className="px-4 py-2.5 whitespace-nowrap">
                         {d.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })}
                         <span className="text-muted-foreground"> · {d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span>
                       </td>
-                      <td className="px-4 py-2.5 font-medium">{a.customer_name}</td>
+                      <td className="px-4 py-2.5">
+                        <span className="font-medium">{a.customer_name}</span>
+                        {isDeleted && (
+                          <Badge variant="outline" className="ml-2 text-[10px] font-normal text-muted-foreground">
+                            Cliente eliminado
+                          </Badge>
+                        )}
+                      </td>
                       <td className="px-4 py-2.5 text-muted-foreground hidden sm:table-cell">{s?.name ?? "—"}</td>
                       <td className="px-4 py-2.5 hidden md:table-cell">
                         <span className="inline-flex items-center gap-1.5">
