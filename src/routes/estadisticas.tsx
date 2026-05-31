@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarCheck, Euro, Trophy, XCircle, BarChart2 } from "lucide-react";
 import { useAppointments, useWorkers, useServices, useAppointmentsRealtime } from "@/hooks/useSilexData";
 import { formatCurrency } from "@/lib/format";
+import { getStatus, statusBadgeStyle } from "@/lib/appointment-status";
 
 export const Route = createFileRoute("/estadisticas")({
   head: () => ({
@@ -16,13 +17,6 @@ export const Route = createFileRoute("/estadisticas")({
   }),
   component: EstadisticasPage,
 });
-
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  scheduled: { label: "Programada", color: "#6366f1" },
-  completed: { label: "Completada", color: "#10b981" },
-  cancelled: { label: "Cancelada", color: "#ef4444" },
-  no_show: { label: "No asistió", color: "#f59e0b" },
-};
 
 function EstadisticasPage() {
   useAppointmentsRealtime();
