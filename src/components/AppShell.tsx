@@ -6,7 +6,6 @@ import {
   Wrench,
   CalendarOff,
   Bot,
-  Sparkles,
   LogOut,
   Menu,
   X,
@@ -20,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AppointmentDialog } from "@/components/AppointmentDialog";
 import { toast } from "sonner";
+import silexLogo from "@/assets/silex-logo.png.asset.json";
 
 const NAV = [
   { to: "/calendar", label: "Calendario", icon: Calendar },
@@ -85,8 +85,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-border bg-sidebar text-sidebar-foreground">
         <Link to="/calendar" className="flex items-center gap-2 px-6 py-5 border-b border-sidebar-border">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-elegant">
-            <Sparkles className="h-5 w-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg overflow-hidden bg-background shadow-elegant">
+            <img src={silexLogo.url} alt="SILEX" className="h-full w-full object-cover" />
           </div>
           <div>
             <div className="text-base font-semibold tracking-tight">SILEX</div>
@@ -132,8 +132,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Mobile top bar */}
         <div className="md:hidden sticky top-0 z-30 flex items-center justify-between border-b border-border px-4 h-14 bg-surface/95 backdrop-blur">
           <Link to="/calendar" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden bg-background">
+              <img src={silexLogo.url} alt="SILEX" className="h-full w-full object-cover" />
             </div>
             <span className="font-semibold">SILEX</span>
           </Link>
