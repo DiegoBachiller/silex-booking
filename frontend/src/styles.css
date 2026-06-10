@@ -165,14 +165,38 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Reserve space for iOS safe areas at the device edges */
+    background-color: var(--color-background);
   }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-feature-settings: "cv11", "ss01";
+    /* Prevent overscroll bounce stealing focus on mobile */
+    overscroll-behavior-y: none;
   }
   h1, h2, h3, h4 {
     letter-spacing: -0.015em;
+  }
+  /* Stop iOS from zooming into inputs whose font-size < 16px */
+  @media (max-width: 768px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+  /* Always allow touch scroll inside scrollable containers */
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Larger tap target for any anchor/button on touch devices */
+  @media (pointer: coarse) {
+    a, button, [role="button"] {
+      touch-action: manipulation;
+    }
   }
 }
 

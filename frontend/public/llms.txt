@@ -1,0 +1,9 @@
+# SILEX
+
+> SILEX es una app de gestión de citas multi-trabajador con módulo de clientes, equipo y estadísticas. Instalable como PWA.
+
+## Pages
+
+- [Iniciar sesión](/login): Acceso al panel de administración de SILEX.
+- [Reservar cita](/embed/book): Widget público de reservas.
+- [Disponibilidad](/embed/availability): Vista pública de disponibilidad en tiempo real.

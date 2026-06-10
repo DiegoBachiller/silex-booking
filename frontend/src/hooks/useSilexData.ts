@@ -77,6 +77,7 @@ export type AiProfile = {
   business_hours_note: string | null;
 };
 
+// AI: ApiKey type kept for when AI agents are re-enabled (see src/_disabled_ai/).
 export type ApiKey = {
   id: string;
   name: string;

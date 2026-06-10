@@ -15,9 +15,9 @@ export const Route = createFileRoute("/holidays")({
   head: () => ({
     meta: [
       { title: "Festivos y vacaciones — SILEX" },
-      { name: "description", content: "Bloquea fechas globales o de un trabajador concreto. La IA respetará estas fechas." },
+      { name: "description", content: "Bloquea fechas globales o de un trabajador concreto." },
       { property: "og:title", content: "Festivos y vacaciones — SILEX" },
-      { property: "og:description", content: "Configura los días en que el agente no ofrecerá citas." },
+      { property: "og:description", content: "Configura los días en los que no se pueden reservar citas." },
     ],
   }),
 
@@ -34,7 +34,7 @@ function HolidaysPage() {
     <AppShell>
       <PageHeader
         title="Festivos y vacaciones"
-        description="Días que el agente IA nunca ofrecerá. Pueden ser globales o solo para un trabajador."
+        description="Días en los que no se podrán reservar citas. Pueden ser globales o solo para un trabajador."
         actions={
           <Button onClick={() => { setEditing(null); setOpen(true); }} className="gap-2">
             <Plus className="h-4 w-4" /> Nuevo bloqueo

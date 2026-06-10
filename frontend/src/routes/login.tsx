@@ -14,7 +14,7 @@ export const Route = createFileRoute("/login")({
       { title: "Iniciar sesión — SILEX" },
       { name: "description", content: "Accede al panel de administración de SILEX." },
       { property: "og:title", content: "SILEX — Panel de administración" },
-      { property: "og:description", content: "Inicia sesión para gestionar citas, equipo y agente IA." },
+      { property: "og:description", content: "Inicia sesión para gestionar tus citas, equipo y clientes." },
       { property: "og:url", content: "https://silex-booking.lovable.app/login" },
     ],
     links: [

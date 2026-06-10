@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { usePwaRegister } from "@/hooks/usePwaRegister";
 
 import appCss from "../styles.css?url";
 
@@ -32,12 +33,19 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SILEX — Reservas inteligentes con IA" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#0b0b0e" },
+      { name: "color-scheme", content: "dark light" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "SILEX" },
+      { name: "format-detection", content: "telephone=no" },
+      { title: "SILEX — Reservas inteligentes" },
       {
         name: "description",
         content:
-          "SILEX: gestión premium de citas multi-trabajador con agentes de voz IA (Vapi, ElevenLabs).",
+          "SILEX: gestión premium de citas multi-trabajador.",
       },
       { property: "og:site_name", content: "SILEX" },
       { property: "og:type", content: "website" },
@@ -45,6 +53,9 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
@@ -95,6 +106,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const [client] = useState(() => new QueryClient());
+  usePwaRegister();
   return (
     <QueryClientProvider client={client}>
       <TooltipProvider>

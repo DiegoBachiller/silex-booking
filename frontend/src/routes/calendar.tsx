@@ -12,7 +12,7 @@ export const Route = createFileRoute("/calendar")({
   head: () => ({
     meta: [
       { title: "Calendario — SILEX" },
-      { name: "description", content: "Vista multi-trabajador de tus citas, manuales o creadas por la IA." },
+      { name: "description", content: "Vista multi-trabajador de tus citas." },
       { property: "og:title", content: "Calendario — SILEX" },
       { property: "og:description", content: "Día, semana o mes: gestiona tus citas en un solo lugar." },
     ],

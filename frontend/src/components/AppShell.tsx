@@ -5,7 +5,7 @@ import {
   Users,
   Wrench,
   CalendarOff,
-  Bot,
+  // AI: Bot,
   LogOut,
   Menu,
   X,
@@ -28,7 +28,7 @@ const NAV = [
   { to: "/clientes", label: "Clientes", icon: UserSquare2 },
   { to: "/services", label: "Servicios", icon: Wrench },
   { to: "/holidays", label: "Festivos", icon: CalendarOff },
-  { to: "/ai-config", label: "Agente IA", icon: Bot },
+  // AI: { to: "/ai-config", label: "Agente IA", icon: Bot },
 ] as const;
 
 // Mobile bottom-nav keeps 5 columns; the rest live in the drawer.
@@ -90,7 +90,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div>
             <div className="text-base font-semibold tracking-tight">SILEX</div>
-            <div className="text-xs text-muted-foreground">Reservas con IA</div>
+            <div className="text-xs text-muted-foreground">Gestor de reservas</div>
           </div>
         </Link>
 
