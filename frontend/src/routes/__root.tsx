@@ -70,7 +70,6 @@ export const Route = createRootRoute({
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "SILEX",
-          url: "https://silex-booking.lovable.app",
         }),
       },
       {
@@ -79,7 +78,6 @@ export const Route = createRootRoute({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "SILEX",
-          url: "https://silex-booking.lovable.app",
         }),
       },
     ],

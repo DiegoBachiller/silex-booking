@@ -103,12 +103,17 @@
 - Modo offline real para `/calendar` (sólo lectura), apoyado en el SW.
 - Vista semanal compacta para tablets en `landscape`.
 
-## Última iteración: 2026-06-10
+## Última iteración: 2026-06-10 (iteración 2)
 
-- Status frontend: **OK** (Vite dev en :3000, página `/login` renderiza
-  correctamente en preview).
-- Status backend: **OK** (FastAPI stub en :8001, sólo `/api/health`).
-- Status Supabase: **PENDIENTE de credenciales del usuario**.
-- Tests: no aplica testing automático en esta iteración (cambios de
-  estructura + comentado de código, sin lógica nueva). Validación visual
-  realizada con screenshot de `/login` y `/embed/book`.
+- [x] **Logo nuevo** integrado: PNG en `/src/assets/silex-logo.png` y `/public/silex-logo.png`. Iconos PWA (192/512/maskable/apple-touch) y favicon regenerados desde el logo.
+- [x] **Landing page** en `/` (público, accesible sin login): TopBar sticky con nav + CTAs, Hero con badge + H1 con gradiente + sub + 2 CTAs + placeholder de vídeo (mockup de calendario, ratio 16:9, botón "Ver demo de 90s" listo para enchufar video real), TrustStrip (verticales target), Features (6 cards), ComingSoon (IA / WhatsApp / SEO Local con badge ETA Q1/Q2), Pricing (Free 0€ vs Pro 30€/mes destacado), FAQ (5 preguntas accordion), CTA final gradient, Footer 4 columnas.
+- [x] **Google OAuth migrado** de `lovable.auth` a `supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } })`. Usa `window.location.origin` (no hardcoded). Marcado con el comentario recordatorio.
+- [x] **Login rediseñado**: nuevo logo, copy mejorado ("Bienvenido de vuelta" / "Crea tu cuenta"), inputs h-11 para móvil, data-testids, link "Volver al inicio".
+- [x] **Cleanup Lovable.app**: eliminadas referencias hardcodeadas a `silex-booking.lovable.app` en `login.tsx`, `__root.tsx` (schema JSON-LD) y `sitemap.xml.ts` (ahora deriva del host del request, fallback `silex.app`).
+- [x] **`/integrations/lovable/index.ts`** no se usa ya en código activo. Se conserva por si se reutiliza para otra cosa.
+
+Status del entorno:
+- Frontend OK (Vite dev :3000, landing y login renderizan).
+- Build de producción OK (12.94 s, `dist/client` + `dist/server` generados).
+- Supabase publishable key configurada en `.env`.
+- ⏳ Pendiente: service role key + configuración Google OAuth en Supabase/Google Console por parte del usuario.

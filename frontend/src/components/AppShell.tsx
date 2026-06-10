@@ -19,7 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AppointmentDialog } from "@/components/AppointmentDialog";
 import { toast } from "sonner";
-import silexLogo from "@/assets/silex-logo.png.asset.json";
+import silexLogo from "@/assets/silex-logo.png";
 
 const NAV = [
   { to: "/calendar", label: "Calendario", icon: Calendar },
@@ -133,7 +133,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="md:hidden sticky top-0 z-30 flex items-center justify-between border-b border-border px-4 h-14 bg-surface/95 backdrop-blur">
           <Link to="/calendar" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden bg-background">
-              <img src={silexLogo.url} alt="SILEX" className="h-full w-full object-cover" />
+              <img src={silexLogo} alt="SILEX" className="h-full w-full object-cover" />
             </div>
             <span className="font-semibold">SILEX</span>
           </Link>

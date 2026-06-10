@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://silex-booking.lovable.app";
+// Use SITE_URL env var if set (Cloudflare prod), otherwise derive from the
+// incoming request host so the sitemap works on every domain.
+const FALLBACK_BASE = "https://silex.app";
 
 interface SitemapEntry {
   path: string;
@@ -12,15 +14,27 @@ interface SitemapEntry {
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const envBase =
+          (typeof process !== "undefined" && process.env?.SITE_URL) || undefined;
+        let baseUrl = envBase ?? FALLBACK_BASE;
+        try {
+          const reqUrl = new URL(request.url);
+          baseUrl = envBase ?? `${reqUrl.protocol}//${reqUrl.host}`;
+        } catch {
+          /* keep fallback */
+        }
+
         const entries: SitemapEntry[] = [
-          { path: "/login", changefreq: "monthly", priority: "1.0" },
+          { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/login", changefreq: "monthly", priority: "0.6" },
+          { path: "/embed/book", changefreq: "monthly", priority: "0.7" },
         ];
 
         const urls = entries.map((e) =>
           [
             `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
+            `    <loc>${baseUrl}${e.path}</loc>`,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,
