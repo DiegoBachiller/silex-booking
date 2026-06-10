@@ -39,11 +39,7 @@ export const Route = createRootRoute({
         content:
           "SILEX: gestión premium de citas multi-trabajador con agentes de voz IA (Vapi, ElevenLabs).",
       },
-      { property: "og:title", content: "SILEX — Reservas inteligentes con IA" },
-      {
-        property: "og:description",
-        content: "Calendario, equipo y agente de voz, todo en un solo lugar.",
-      },
+      { property: "og:site_name", content: "SILEX" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -56,6 +52,27 @@ export const Route = createRootRoute({
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "SILEX",
+          url: "https://silex-booking.lovable.app",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "SILEX",
+          url: "https://silex-booking.lovable.app",
+        }),
+      },
+    ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,

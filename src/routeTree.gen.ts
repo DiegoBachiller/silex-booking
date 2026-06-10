@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HolidaysRouteImport } from './routes/holidays'
@@ -32,6 +33,11 @@ import { Route as ApiPublicAdminApiKeysRouteImport } from './routes/api/public/a
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
   path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/holidays': typeof HolidaysRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/embed/availability': typeof EmbedAvailabilityRoute
   '/embed/book': typeof EmbedBookRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/holidays': typeof HolidaysRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/embed/availability': typeof EmbedAvailabilityRoute
   '/embed/book': typeof EmbedBookRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/holidays': typeof HolidaysRoute
   '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/embed/availability': typeof EmbedAvailabilityRoute
   '/embed/book': typeof EmbedBookRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/holidays'
     | '/login'
     | '/services'
+    | '/sitemap.xml'
     | '/team'
     | '/embed/availability'
     | '/embed/book'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/holidays'
     | '/login'
     | '/services'
+    | '/sitemap.xml'
     | '/team'
     | '/embed/availability'
     | '/embed/book'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/holidays'
     | '/login'
     | '/services'
+    | '/sitemap.xml'
     | '/team'
     | '/embed/availability'
     | '/embed/book'
@@ -267,6 +279,7 @@ export interface RootRouteChildren {
   HolidaysRoute: typeof HolidaysRoute
   LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TeamRoute: typeof TeamRoute
   EmbedAvailabilityRoute: typeof EmbedAvailabilityRoute
   EmbedBookRoute: typeof EmbedBookRoute
@@ -287,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -427,6 +447,7 @@ const rootRouteChildren: RootRouteChildren = {
   HolidaysRoute: HolidaysRoute,
   LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TeamRoute: TeamRoute,
   EmbedAvailabilityRoute: EmbedAvailabilityRoute,
   EmbedBookRoute: EmbedBookRoute,
@@ -442,12 +463,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
