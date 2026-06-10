@@ -224,8 +224,9 @@ function Shell({ children, business }: { children: React.ReactNode; business?: s
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <div className="font-semibold text-sm">{business ?? "Reservas"}</div>
-            <div className="text-xs text-muted-foreground">Reserva tu cita</div>
+          <h1 className="font-semibold text-sm">{business ?? "Reservas"}</h1>
+          <div className="text-xs text-muted-foreground">Reserva tu cita</div>
+
           </div>
         </div>
         <div className="silex-card p-5">{children}</div>
