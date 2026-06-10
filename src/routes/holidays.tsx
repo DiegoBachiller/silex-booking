@@ -16,8 +16,11 @@ export const Route = createFileRoute("/holidays")({
     meta: [
       { title: "Festivos y vacaciones — SILEX" },
       { name: "description", content: "Bloquea fechas globales o de un trabajador concreto. La IA respetará estas fechas." },
+      { property: "og:title", content: "Festivos y vacaciones — SILEX" },
+      { property: "og:description", content: "Configura los días en que el agente no ofrecerá citas." },
     ],
   }),
+
   component: HolidaysPage,
 });
 
@@ -44,7 +47,7 @@ function HolidaysPage() {
             <div className="mx-auto h-12 w-12 rounded-xl bg-accent flex items-center justify-center mb-4">
               <CalendarOff className="h-6 w-6 text-accent-foreground" />
             </div>
-            <h3 className="text-base font-semibold mb-1">Sin festivos configurados</h3>
+            <h2 className="text-base font-semibold mb-1">Sin festivos configurados</h2>
             <p className="text-sm text-muted-foreground">Añade tus festivos nacionales o periodos de vacaciones.</p>
           </div>
         ) : (
@@ -69,9 +72,10 @@ function HolidaysPage() {
                       {h.worker_id ? workers.find((w) => w.id === h.worker_id)?.name ?? "—" : "Todo el equipo"}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="icon" onClick={() => { setEditing(h); setOpen(true); }}>
+                      <Button variant="ghost" size="icon" aria-label={`Editar ${h.name}`} onClick={() => { setEditing(h); setOpen(true); }}>
                         <Pencil className="h-4 w-4" />
                       </Button>
+
                     </td>
                   </tr>
                 ))}

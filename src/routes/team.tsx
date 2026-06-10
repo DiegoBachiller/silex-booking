@@ -19,8 +19,11 @@ export const Route = createFileRoute("/team")({
     meta: [
       { title: "Equipo — SILEX" },
       { name: "description", content: "Crea y edita perfiles de trabajadores, sus servicios y horarios semanales." },
+      { property: "og:title", content: "Equipo — SILEX" },
+      { property: "og:description", content: "Gestiona los trabajadores y sus horarios." },
     ],
   }),
+
   component: TeamPage,
 });
 
@@ -69,9 +72,10 @@ function TeamPage() {
                     </div>
                   </div>
                 </div>
-                <Button size="icon" variant="ghost" onClick={() => { setEditing(w); setOpen(true); }}>
+                <Button size="icon" variant="ghost" aria-label={`Editar ${w.name}`} onClick={() => { setEditing(w); setOpen(true); }}>
                   <Pencil className="h-4 w-4" />
                 </Button>
+
               </div>
               <div className="mt-4 space-y-1.5 text-xs text-muted-foreground">
                 {w.email && <div className="flex items-center gap-1.5"><Mail className="h-3 w-3" /> {w.email}</div>}

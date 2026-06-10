@@ -13,8 +13,11 @@ export const Route = createFileRoute("/calendar")({
     meta: [
       { title: "Calendario — SILEX" },
       { name: "description", content: "Vista multi-trabajador de tus citas, manuales o creadas por la IA." },
+      { property: "og:title", content: "Calendario — SILEX" },
+      { property: "og:description", content: "Día, semana o mes: gestiona tus citas en un solo lugar." },
     ],
   }),
+
   component: CalendarPage,
 });
 
@@ -117,7 +120,7 @@ function CalendarPage() {
           <>
             <ViewSwitcher view={view} onChange={setView} />
             <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1">
-              <Button size="icon" variant="ghost" onClick={() => navigate(-1)}>
+              <Button size="icon" variant="ghost" aria-label="Anterior" onClick={() => navigate(-1)}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <button
@@ -126,9 +129,10 @@ function CalendarPage() {
               >
                 {headerLabel}
               </button>
-              <Button size="icon" variant="ghost" onClick={() => navigate(1)}>
+              <Button size="icon" variant="ghost" aria-label="Siguiente" onClick={() => navigate(1)}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
+
             </div>
             <Button onClick={() => openCreate()} className="gap-2">
               <Plus className="h-4 w-4" /> Nueva cita
@@ -209,7 +213,7 @@ function EmptyState() {
       <div className="mx-auto h-12 w-12 rounded-xl bg-accent flex items-center justify-center mb-4">
         <User className="h-6 w-6 text-accent-foreground" />
       </div>
-      <h3 className="text-base font-semibold mb-1">Aún no hay trabajadores activos</h3>
+      <h2 className="text-base font-semibold mb-1">Aún no hay trabajadores activos</h2>
       <p className="text-sm text-muted-foreground mb-4">Añade tu primer miembro del equipo para empezar.</p>
       <a href="/team">
         <Button>Ir a Equipo</Button>
