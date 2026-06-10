@@ -15,8 +15,11 @@ export const Route = createFileRoute("/estadisticas")({
     meta: [
       { title: "Estadísticas — SILEX" },
       { name: "description", content: "Métricas clave de tu negocio: citas, ingresos y rendimiento del equipo." },
+      { property: "og:title", content: "Estadísticas — SILEX" },
+      { property: "og:description", content: "Resumen mensual de citas e ingresos." },
     ],
   }),
+
   component: EstadisticasPage,
 });
 

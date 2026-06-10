@@ -19,8 +19,11 @@ export const Route = createFileRoute("/ai-config")({
     meta: [
       { title: "Agente IA — SILEX" },
       { name: "description", content: "Configura tu asistente de voz: nombre, tono, voz e idioma. Sin tocar el prompt técnico." },
+      { property: "og:title", content: "Agente IA — SILEX" },
+      { property: "og:description", content: "Personaliza la voz y el tono de tu recepcionista virtual." },
     ],
   }),
+
   component: AiConfigPage,
 });
 
@@ -269,9 +272,10 @@ function ApiKeysCard() {
           <div className="text-xs font-medium mb-1 text-warning-foreground">⚠ Copia esta clave ahora — solo se muestra una vez</div>
           <div className="flex items-center gap-2">
             <code className="text-[11px] font-mono break-all flex-1">{justCreated}</code>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { navigator.clipboard.writeText(justCreated); toast.success("Copiado"); }}>
+            <Button size="icon" variant="ghost" aria-label="Copiar clave" className="h-7 w-7" onClick={() => { navigator.clipboard.writeText(justCreated); toast.success("Copiado"); }}>
               <Copy className="h-3 w-3" />
             </Button>
+
           </div>
           <button className="text-[11px] text-muted-foreground mt-2 hover:underline" onClick={() => setJustCreated(null)}>
             Entendido
@@ -287,9 +291,10 @@ function ApiKeysCard() {
               <div className="text-xs font-medium">{k.name}</div>
               <div className="text-[10px] text-muted-foreground font-mono">{k.key.slice(0, 12)}…{k.key.slice(-4)}</div>
             </div>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={remove(k.id)}>
+            <Button size="icon" variant="ghost" aria-label={`Eliminar clave ${k.name}`} className="h-7 w-7" onClick={remove(k.id)}>
               <Trash2 className="h-3 w-3" />
             </Button>
+
           </div>
         ))}
       </div>

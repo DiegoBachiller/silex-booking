@@ -13,8 +13,15 @@ export const Route = createFileRoute("/login")({
     meta: [
       { title: "Iniciar sesión — SILEX" },
       { name: "description", content: "Accede al panel de administración de SILEX." },
+      { property: "og:title", content: "SILEX — Panel de administración" },
+      { property: "og:description", content: "Inicia sesión para gestionar citas, equipo y agente IA." },
+      { property: "og:url", content: "https://silex-booking.lovable.app/login" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://silex-booking.lovable.app/login" },
     ],
   }),
+
   component: LoginPage,
 });
 
@@ -76,8 +83,9 @@ function LoginPage() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-elegant mb-3">
             <Sparkles className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">SILEX</h1>
-          <p className="text-sm text-muted-foreground mt-1">Panel de administración</p>
+          <h1 className="text-2xl font-semibold tracking-tight">SILEX — Panel de administración</h1>
+          <p className="text-sm text-muted-foreground mt-1">Accede a tu cuenta</p>
+
         </div>
 
         <div className="silex-card p-6 space-y-4">

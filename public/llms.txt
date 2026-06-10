@@ -1,0 +1,7 @@
+# SILEX
+
+> SILEX es una app de gestión de citas multi-trabajador con agente de voz IA (Vapi, ElevenLabs) y módulo de clientes y estadísticas.
+
+## Pages
+
+- [Iniciar sesión](/login): Acceso al panel de administración de SILEX.

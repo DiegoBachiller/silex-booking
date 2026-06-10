@@ -17,8 +17,11 @@ export const Route = createFileRoute("/services")({
     meta: [
       { title: "Servicios — SILEX" },
       { name: "description", content: "Catálogo global de servicios con duración y precio." },
+      { property: "og:title", content: "Servicios — SILEX" },
+      { property: "og:description", content: "Define el catálogo que ofrecen tus trabajadores." },
     ],
   }),
+
   component: ServicesPage,
 });
 
@@ -44,7 +47,7 @@ function ServicesPage() {
             <div className="mx-auto h-12 w-12 rounded-xl bg-accent flex items-center justify-center mb-4">
               <Wrench className="h-6 w-6 text-accent-foreground" />
             </div>
-            <h3 className="text-base font-semibold mb-1">No hay servicios todavía</h3>
+            <h2 className="text-base font-semibold mb-1">No hay servicios todavía</h2>
             <p className="text-sm text-muted-foreground mb-4">Crea tu primer servicio para que los clientes puedan reservarlo.</p>
             <Button onClick={() => { setEditing(null); setOpen(true); }}>Crear servicio</Button>
           </div>
@@ -69,9 +72,10 @@ function ServicesPage() {
                     <td className="px-4 py-3 text-muted-foreground">{s.duration_minutes} min</td>
                     <td className="px-4 py-3 text-muted-foreground">{formatCurrency(s.price_cents, s.currency)}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="icon" onClick={() => { setEditing(s); setOpen(true); }}>
+                      <Button variant="ghost" size="icon" aria-label={`Editar ${s.name}`} onClick={() => { setEditing(s); setOpen(true); }}>
                         <Pencil className="h-4 w-4" />
                       </Button>
+
                     </td>
                   </tr>
                 ))}

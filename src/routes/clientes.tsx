@@ -31,8 +31,11 @@ export const Route = createFileRoute("/clientes")({
     meta: [
       { title: "Clientes — SILEX" },
       { name: "description", content: "Base de clientes de tu negocio con su historial de citas." },
+      { property: "og:title", content: "Clientes — SILEX" },
+      { property: "og:description", content: "Fichas e historial de cada cliente." },
     ],
   }),
+
   component: ClientesPage,
 });
 
