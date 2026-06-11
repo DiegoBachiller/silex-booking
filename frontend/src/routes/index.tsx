@@ -26,6 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { QuickSignup } from "@/components/QuickSignup";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import silexLogo from "@/assets/silex-logo.png";
@@ -695,6 +696,7 @@ function Footer() {
 // ---------- page ------------------------------------------------------------
 
 function LandingPage() {
+  const logged = useAuthState();
   return (
     <main className="min-h-[100dvh] bg-background text-foreground antialiased" data-testid="landing-page">
       <TopBar />
@@ -706,6 +708,7 @@ function LandingPage() {
       <FAQ />
       <FinalCTA />
       <Footer />
+      {logged === false && <QuickSignup />}
     </main>
   );
 }

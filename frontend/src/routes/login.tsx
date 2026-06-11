@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import silexLogo from "@/assets/silex-logo.png";
 
+type LoginSearch = {
+  email?: string;
+  mode?: "signin" | "signup";
+};
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): LoginSearch => ({
+    email: typeof search.email === "string" ? search.email : undefined,
+    mode: search.mode === "signup" ? "signup" : search.mode === "signin" ? "signin" : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Iniciar sesión — SILEX" },
@@ -23,8 +32,9 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
+  const search = useSearch({ from: "/login" });
+  const [mode, setMode] = useState<"signin" | "signup">(search.mode ?? "signin");
+  const [email, setEmail] = useState(search.email ?? "");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
