@@ -77,7 +77,8 @@ function LoginPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/calendar`,
+          // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+          redirectTo: `${window.location.origin}/auth/callback`,
           // We do the redirect manually below to avoid edge-cases where the
           // SDK's auto-redirect silently fails (preview iframes, COOP/COEP, …).
           skipBrowserRedirect: true,

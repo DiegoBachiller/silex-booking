@@ -20,6 +20,7 @@ import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmbedBookRouteImport } from './routes/embed.book'
 import { Route as EmbedAvailabilityRouteImport } from './routes/embed.availability'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ApiPublicBookingConfigRouteImport } from './routes/api/public/booking/config'
 import { Route as ApiPublicBookingBookRouteImport } from './routes/api/public/booking/book'
 import { Route as ApiPublicBookingAvailabilityRouteImport } from './routes/api/public/booking/availability'
@@ -79,6 +80,11 @@ const EmbedAvailabilityRoute = EmbedAvailabilityRouteImport.update({
   path: '/embed/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicBookingConfigRoute = ApiPublicBookingConfigRouteImport.update({
   id: '/api/public/booking/config',
   path: '/api/public/booking/config',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/embed/availability': typeof EmbedAvailabilityRoute
   '/embed/book': typeof EmbedBookRoute
   '/api/public/booking/availability': typeof ApiPublicBookingAvailabilityRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/embed/availability': typeof EmbedAvailabilityRoute
   '/embed/book': typeof EmbedBookRoute
   '/api/public/booking/availability': typeof ApiPublicBookingAvailabilityRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/embed/availability': typeof EmbedAvailabilityRoute
   '/embed/book': typeof EmbedBookRoute
   '/api/public/booking/availability': typeof ApiPublicBookingAvailabilityRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/team'
+    | '/auth/callback'
     | '/embed/availability'
     | '/embed/book'
     | '/api/public/booking/availability'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/team'
+    | '/auth/callback'
     | '/embed/availability'
     | '/embed/book'
     | '/api/public/booking/availability'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/team'
+    | '/auth/callback'
     | '/embed/availability'
     | '/embed/book'
     | '/api/public/booking/availability'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TeamRoute: typeof TeamRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   EmbedAvailabilityRoute: typeof EmbedAvailabilityRoute
   EmbedBookRoute: typeof EmbedBookRoute
   ApiPublicBookingAvailabilityRoute: typeof ApiPublicBookingAvailabilityRoute
@@ -292,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmbedAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/booking/config': {
       id: '/api/public/booking/config'
       path: '/api/public/booking/config'
@@ -326,6 +346,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TeamRoute: TeamRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   EmbedAvailabilityRoute: EmbedAvailabilityRoute,
   EmbedBookRoute: EmbedBookRoute,
   ApiPublicBookingAvailabilityRoute: ApiPublicBookingAvailabilityRoute,
