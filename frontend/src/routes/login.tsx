@@ -72,16 +72,35 @@ function LoginPage() {
 
   const onGoogle = async () => {
     setLoading(true);
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/calendar` },
-    });
-    if (error) {
-      toast.error(error.message ?? "Error con Google");
+    try {
+      // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/calendar`,
+          // We do the redirect manually below to avoid edge-cases where the
+          // SDK's auto-redirect silently fails (preview iframes, COOP/COEP, …).
+          skipBrowserRedirect: true,
+        },
+      });
+      if (error) {
+        console.error("[Google OAuth]", error);
+        toast.error(error.message ?? "Error con Google");
+        setLoading(false);
+        return;
+      }
+      if (data?.url) {
+        // Hard navigation — bypasses any SPA router intercept.
+        window.location.assign(data.url);
+        return;
+      }
+      toast.error("No se recibió URL de Google. Revisa la configuración del proveedor en Supabase.");
+      setLoading(false);
+    } catch (err) {
+      console.error("[Google OAuth] threw", err);
+      toast.error((err as Error)?.message ?? "Error inesperado con Google");
       setLoading(false);
     }
-    // Supabase redirects the page to Google here; nothing else to do.
   };
 
   return (
