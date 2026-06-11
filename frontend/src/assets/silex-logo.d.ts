@@ -1,7 +1,5 @@
-// Vite's "module" import — this becomes a hashed file in dist/client/assets/.
-// We don't need a TypeScript module declaration because vite/client already
-// provides one for *.png.
-declare module "@/assets/silex-logo.png" {
+// Vite turns `*.png?url` into a hashed asset URL string.
+declare module "@/assets/silex-logo.png?url" {
   const src: string;
   export default src;
 }

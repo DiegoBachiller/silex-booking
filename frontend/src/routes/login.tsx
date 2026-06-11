@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Mail, Lock, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import silexLogo from "@/assets/silex-logo.png";
+import silexLogo from "@/assets/silex-logo.png?url";
 
 type LoginSearch = {
   email?: string;

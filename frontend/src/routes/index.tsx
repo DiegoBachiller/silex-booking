@@ -29,7 +29,7 @@ import {
 import { QuickSignup } from "@/components/QuickSignup";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import silexLogo from "@/assets/silex-logo.png";
+import silexLogo from "@/assets/silex-logo.png?url";
 
 export const Route = createFileRoute("/")({
   head: () => ({

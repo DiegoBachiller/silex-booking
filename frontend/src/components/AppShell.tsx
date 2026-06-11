@@ -19,7 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AppointmentDialog } from "@/components/AppointmentDialog";
 import { toast } from "sonner";
-import silexLogo from "@/assets/silex-logo.png";
+import silexLogo from "@/assets/silex-logo.png?url";
 
 const NAV = [
   { to: "/calendar", label: "Calendario", icon: Calendar },
