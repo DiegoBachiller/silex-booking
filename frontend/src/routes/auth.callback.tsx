@@ -7,9 +7,16 @@ import { toast } from "sonner";
  * Supabase OAuth callback.
  *
  * Google → Supabase Auth → here (with `?code=<…>` and `state` in the URL).
- * We exchange the auth code for a session client‑side, then route the user
- * straight to /calendar. If anything goes wrong, we bounce back to /login
- * with a toast describing the failure.
+ *
+ * The Supabase JS SDK has `detectSessionInUrl: true` by default, which means
+ * it AUTOMATICALLY exchanges the `?code=…` for a session as soon as the
+ * client is created on this page load. Calling `exchangeCodeForSession()`
+ * ourselves would race with the SDK and Google would reject the second use
+ * of the single-use code with:  "Unable to exchange external code: 4/0A…".
+ *
+ * So here we just sit and wait for `onAuthStateChange` to fire with the new
+ * session, then route to /calendar. Errors land us back on /login with a
+ * descriptive toast.
  *
  * REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
  */
@@ -21,49 +28,56 @@ function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let active = true;
+    let resolved = false;
 
-    const finish = async () => {
-      try {
-        const url = new URL(window.location.href);
-        const code = url.searchParams.get("code");
-        const errorDescription =
-          url.searchParams.get("error_description") || url.searchParams.get("error");
+    const url = new URL(window.location.href);
+    const errParam =
+      url.searchParams.get("error_description") || url.searchParams.get("error");
 
-        if (errorDescription) {
-          if (!active) return;
-          toast.error(decodeURIComponent(errorDescription));
-          navigate({ to: "/login" });
-          return;
-        }
+    if (errParam) {
+      resolved = true;
+      toast.error(decodeURIComponent(errParam));
+      navigate({ to: "/login" });
+      return;
+    }
 
-        if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) throw error;
-        }
-
-        // If there is no `code`, Supabase may have already exchanged it via
-        // detectSessionInUrl. Either way, verify we now have a session.
-        const { data } = await supabase.auth.getSession();
-        if (!active) return;
-        if (data.session) {
-          toast.success("Sesión iniciada con Google");
-          navigate({ to: "/calendar" });
-        } else {
-          toast.error("No se pudo iniciar sesión. Inténtalo de nuevo.");
-          navigate({ to: "/login" });
-        }
-      } catch (err) {
-        if (!active) return;
-        console.error("[auth/callback]", err);
-        toast.error((err as Error)?.message ?? "Error completando el login con Google");
+    const finalize = (ok: boolean, message?: string) => {
+      if (resolved) return;
+      resolved = true;
+      if (ok) {
+        toast.success("Sesión iniciada con Google");
+        navigate({ to: "/calendar" });
+      } else {
+        toast.error(message ?? "No se pudo iniciar sesión");
         navigate({ to: "/login" });
       }
     };
 
-    finish();
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        finalize(true);
+      } else if (event === "SIGNED_OUT") {
+        finalize(false);
+      }
+    });
+
+    // Defensive: maybe the session was already exchanged before we subscribed.
+    supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (error) finalize(false, error.message);
+        else if (data.session) finalize(true);
+      })
+      .catch((err) => finalize(false, (err as Error).message));
+
+    // Safety net so the spinner never gets stuck forever.
+    const timeout = window.setTimeout(() => {
+      finalize(false, "Tiempo de espera agotado. Inténtalo de nuevo.");
+    }, 8000);
+
     return () => {
-      active = false;
+      window.clearTimeout(timeout);
+      sub.subscription.unsubscribe();
     };
   }, [navigate]);
 
